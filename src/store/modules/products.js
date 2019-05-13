@@ -1,4 +1,5 @@
 // model classes
+import { Product } from '@/models/Product';
 
 // axios for API calls
 
