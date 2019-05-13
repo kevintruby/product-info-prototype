@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <div class="container mt-5">
+    <div v-infinite-scroll="getProducts" class="container mt-5">
       <h3>Click a product for more info</h3>
 
       <!-- products API results -->
@@ -31,7 +31,7 @@
 
 <script>
   // vuex
-  import { mapGetters, mapMutations, mapState } from 'vuex';
+  import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
 
   // @ is an alias to /src
   import ProductResult from '@/components/ProductResult.vue';
@@ -39,11 +39,25 @@
   // Bootstrap components
   import BModal from 'bootstrap-vue/es/components/modal/modal';
 
+  // infinite scroll plugin
+  import infiniteScroll from 'vue-infinite-scroll'
+
+  /**
+   * directly handling scroll events is not a specialty of mine, so i opted to use a library that can be
+   * imported and attached as a reusable directive. comes with several options that may improve performance.
+   * currently seems effective enough with the checks added to the getProducts() call to prevent simultaneous
+   * requests. these options can be considered more if greater efficiency is desired, i.e. reducing event
+   * firing/handling.
+   */
+
   export default {
     name: 'Home',
     components: {
       BModal,
       ProductResult,
+    },
+    directives: {
+      infiniteScroll,
     },
     mounted () {
       this.$root.$on('bv::hide::modal', this.clearSelectedProduct)
@@ -59,6 +73,9 @@
       ]),
     },
     methods: {
+      ...mapActions('products', [
+        'getProducts',
+      ]),
       ...mapMutations('products', [
         'clearSelectedProduct',
       ]),

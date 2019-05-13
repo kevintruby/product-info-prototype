@@ -44,7 +44,7 @@
 
 <style lang="scss">
   @import '~bootstrap/scss/bootstrap';
-  @import '~bootstrap-vue/src/index.scss';
+  @import '~bootstrap-vue/src/index';
 
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
