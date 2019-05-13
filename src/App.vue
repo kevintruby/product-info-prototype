@@ -21,6 +21,9 @@
       this.updateBearerToken();
     },
     methods: {
+      ...mapActions('products', [
+        'getProducts',
+      ]),
       ...mapActions('session', [
         'updateBearerToken',
       ]),
