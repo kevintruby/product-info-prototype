@@ -6,6 +6,8 @@ import { ProductFromCollectionApi } from '@/models/factories/ProductFactory';
 import axios from 'axios';
 axios.defaults.baseURL = 'https://api.commercetools.co/nuts-custom-demo-1';
 
+// using Bootstrap for presentation, which doesn't handle 5 columns well;
+// extending to 12 in order to leverage the grid system more easily
 const products_per_request = 12;
 
 const state = {
