@@ -94,5 +94,6 @@
 <style lang="scss">
   .home {
     padding-top: 50px;
+    min-height: 125vh; // helps guarantee ability to scroll on desktop
   }
 </style>
