@@ -1,7 +1,8 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <div v-infinite-scroll="getProducts" class="container mt-5">
+    <!-- disabled prop doesn't use :-binding, seems to expect it to point to state attributes -->
+    <div v-infinite-scroll="getProducts" infinite-scroll-disabled="is_token_set" class="container mt-5">
       <h3>Click a product for more info</h3>
 
       <!-- products API results -->
@@ -19,8 +20,9 @@
     <b-modal id="productDetails" centered ok-only size="lg" title="Product Info">
       <div>
         <img :src="selected_product.detail_img_url" :alt="selected_product.name" class="img-fluid mb-5" />
-        <p><strong>Name: </strong>{{ selected_product.name }}</p>
-        <p><strong>Description: </strong>{{ selected_product.description }}</p>
+        <!-- data appears to include HTML characters, so using v-html directive instead of {{ }} interpolation -->
+        <p><strong>Name: </strong><span v-html="selected_product.name" /></p>
+        <p><strong>Description: </strong><span v-html="selected_product.description" /></p>
         <p><strong>Price: </strong>{{ selected_product.price }}</p>
         <img v-if="selected_product.is_organic" :src="selected_product.badges.organic.badge_url"
              alt="Organic Product" class="img-fluid" />
@@ -48,6 +50,9 @@
    * currently seems effective enough with the checks added to the getProducts() call to prevent simultaneous
    * requests. these options can be considered more if greater efficiency is desired, i.e. reducing event
    * firing/handling.
+   *
+   * observed that infinite scroll appears to load product info immediately, causing an error before bearer token
+   * is set; using a property to disable it until ready. this may mean the watcher is no longer necessary.
    */
 
   export default {
@@ -66,6 +71,9 @@
       ...mapGetters('products', [
         'product_limit_reached',
         'selected_product',
+      ]),
+      ...mapGetters('session', [
+        'is_token_set',
       ]),
       ...mapState('products', [
         'products',

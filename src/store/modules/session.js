@@ -7,7 +7,11 @@ const state = {
   api_bearer_token: '',
 };
 
-const getters = {};
+const getters = {
+  is_token_set (state) {
+    return state.api_bearer_token === '';
+  }
+};
 
 const actions = {
   setAxiosAuthHeader ({ state }) {

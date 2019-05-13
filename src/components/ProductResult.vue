@@ -1,7 +1,8 @@
 <template>
   <div class="product-tile" @click="showDetails">
     <img :src="product.thumbnail_img_url" :alt="product.name" class="img-fluid" />
-    <p>{{ product.name }}</p>
+    <!-- data appears to include HTML characters, so using v-html directive instead of {{ }} interpolation -->
+    <p v-html="product.name" />
   </div>
 </template>
 
@@ -9,11 +10,14 @@
   // vuex
   import { mapMutations } from 'vuex';
 
+  // class definition for type checking
+  import { Product } from '@/models/Product';
+
   export default {
     name: 'ProductResult',
     props: {
       // consider importing Product class to map the type definition for better prop validation
-      product: { required: true, type: Object },
+      product: { required: true, type: Product },
     },
     methods: {
       ...mapMutations('products', [
