@@ -1,10 +1,12 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <!-- while this currently only serves a single page; including vue-router at the beginning will -->
+    <!-- make future additions and scaling easier than to integrate within an established structure -->
+    <!--<div id="nav">-->
+      <!--<router-link to="/">Home</router-link> |-->
+      <!--<router-link to="/about">About</router-link>-->
+    <!--</div>-->
+    <router-view />
   </div>
 </template>
 
