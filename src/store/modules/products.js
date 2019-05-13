@@ -6,15 +6,36 @@ import { ProductFromCollectionApi } from '@/models/factories/ProductFactory';
 import axios from 'axios';
 axios.defaults.baseURL = 'https://api.commercetools.co/nuts-custom-demo-1';
 
+const products_per_request = 12;
+
 const state = {
   fetching_products: false,
   products: [],
-  product_request_limit: 10,
-  product_result_limit: 20, // initialize to double request limit, will be updated
+  product_request_limit: products_per_request,
+  product_result_limit: products_per_request * 2, // initialize to double request limit, will be updated
   selected_product_id: null,
 };
 
-const getters = {};
+const getters = {
+  product_ids (state) {
+    return state.products.map(product_obj => product_obj.id);
+  },
+  product_limit_reached (state) {
+    return state.products.length >= state.product_result_limit;
+  },
+  selected_product (state, getters) {
+    // sanity check on data type
+    if (state.selected_product_id === null || getters.product_ids.indexOf(state.selected_product_id) === -1)
+      return new Product();
+
+    let matched_product = state.products.find(product_obj => product_obj.id === state.selected_product_id);
+    if (matched_product && matched_product.constructor === Product)
+      return matched_product;
+
+    // if no match is found, return a generic empty instance so the modal component doesn't break (expects class attributes)
+    return new Product();
+  }
+};
 
 const actions = {
   getProducts ({ commit, state }) {
@@ -51,7 +72,9 @@ const actions = {
         if (parsed_products.length)
           commit('addProducts', parsed_products);
 
-        // @todo: check to see if we've reached the end, so that infinite scroll doesn't keep querying
+        // check total count to see if we've reached the end, so that infinite scroll doesn't keep querying
+        if (total && total.constructor === Number && total !== state.product_result_limit)
+          commit('setTotalProductCount', total);
       })
       .catch(err => console.error(err))
       .then(() => commit('setFetchingProductsState', false));
@@ -70,12 +93,29 @@ const mutations = {
     // if we have remaining products after pulling out duplicates, update state collection; should be an empty array if none are left
     unique_products.forEach(product_obj => state.products.push(product_obj));
   },
+  clearSelectedProduct (state) {
+    state.selected_product_id = null;
+  },
+  selectProduct (state, product_id) {
+    // sanity check on data type
+    if (!product_id || product_id.constructor !== String)
+      return;
+
+    state.selected_product_id = product_id;
+  },
   setFetchingProductsState (state, is_fetching_products) {
     // sanity check on data type
     if (is_fetching_products === undefined || is_fetching_products === null || !is_fetching_products.constructor === Boolean)
       return;
 
     state.fetching_products = is_fetching_products;
+  },
+  setTotalProductCount (state, total_count) {
+    // sanity check on data type
+    if (!total_count || total_count.constructor !== Number)
+      return;
+
+    state.product_result_limit = total_count;
   },
 };
 
