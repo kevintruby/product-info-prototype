@@ -12,13 +12,24 @@
 
 <script>
   // vuex
-  import { mapActions } from 'vuex';
+  import { mapActions, mapState } from 'vuex';
 
-  // @todo: use mapState to watch for bearer token, and fetch products once set up in Vuex products module
   export default {
     name: 'AppContainer',
     mounted () {
       this.updateBearerToken();
+    },
+    computed: {
+      ...mapState('session', [
+        'api_bearer_token',
+      ]),
+    },
+    watch: {
+      api_bearer_token: function (new_val, old_val) {
+        // sanity check on data type
+        if (new_val && new_val.constructor === String && new_val.length && old_val === '')
+          this.getProducts();
+      },
     },
     methods: {
       ...mapActions('products', [
@@ -51,5 +62,12 @@
         color: #42b983;
       }
     }
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 </style>
